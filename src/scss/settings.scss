@@ -1,0 +1,136 @@
+
+
+
+#settings{
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: $appWidth;
+    height: $appHeight;    
+    overflow: hidden;
+    display: flex;
+
+
+    .settings-body{
+        
+        display: flex;
+        flex: 1;
+        height: 100%;
+        flex-direction: column;
+        align-items: center;
+        overflow: auto;
+        overflow-x: hidden;        
+        padding-top: 40px;
+        background-color: #f1f1f1;
+        
+        
+
+        .close{
+            position: absolute;
+            right: 21px;
+            top: 4px;
+            color: grey;
+
+        }
+
+        &.automatic{
+            color: grey;
+        }
+
+        .content{
+            width: 50%;
+            min-width: 340px;
+            max-width: 670px;
+        }
+
+        .settings-row{
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+
+            p{
+                margin: 0;
+            }
+
+            .settings-input{
+                width: 70px;
+                padding: 5px 0;
+                text-align: center;
+                box-shadow: none; //ffox
+
+                &.input-error{
+                    background-color: #e84e4e;
+                    color: white;
+                }
+            }
+
+            #dolar-input-auto{
+                color: grey;
+            }
+
+            &.settings-row-currencies{
+                flex-direction: column;
+                align-items: flex-start;
+
+                .last-update{
+                    color: #9e9e9e;
+
+                    .currency-refresh{
+                        color:#449d44;
+                    }
+                }
+            }
+
+        }
+
+        .color-picker-btn{
+
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            padding: 0;
+
+            &.rose{
+                background-color: #D24D57;
+            }
+
+            &.emerald{
+                background-color: #3FC380;
+            }
+
+            &.carbon{
+                background-color: #292b2c;
+            }
+
+            &.blue{
+                background-color: #3367d6;
+            }
+        }
+
+        .contact-link-container{
+            width: calc(100% - 60px);
+            color: #4975f7;
+            
+            #contact-link{
+                i{
+                    font-size: 1.5rem;
+                }
+            }
+        }
+
+        
+    }
+
+    #version{
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        color: #9a9a9a;
+        margin: 20px;
+
+        @media(max-width: 500px){
+            display: none;
+        }
+    }
+
+}

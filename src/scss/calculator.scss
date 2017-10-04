@@ -1,0 +1,165 @@
+#calculator{
+  display: flex;
+  height: 100%;
+
+  .panel{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .panel-title{
+      letter-spacing: 2px;
+      font-size: 1rem;
+      color: $mainFontColor;
+      
+      margin-top: 40px;
+    }
+  }
+
+  #section-purchase{
+
+    #compra-stuff{
+      margin-top: 50px;
+      font-size: 1rem;
+  
+      #currency-select{
+        padding: 2px;    
+        padding-top: 3px;   
+        width: 61px;
+        height: 30px;
+        font-weight: bold; 
+        cursor: pointer;       
+  
+        // hide dropdown arrow in ffox:
+        -moz-appearance: none;
+        text-indent: 0.01px;
+        text-overflow: '';
+      }
+
+      .arrow-container{
+        pointer-events: none;
+        
+
+        .arrow{
+          background-color: white;
+          position: relative;
+          left: 54px;
+          top: 2px;
+          cursor: pointer;
+        }
+      }
+  
+      
+  
+      #price-compra-input{
+        padding: 1px;
+        padding-left: 4px;
+        padding-top: 2px;        
+        height: 30px;
+        width: 61px;
+        font-weight: bold;
+        letter-spacing: 1px;
+      }
+  
+      .currency-conversion-container{
+        position: absolute;
+        left: 0;
+        pointer-events: none;
+  
+        #currency-conversion-text{
+          position: relative;
+          top: 33px;
+          left: 10px;
+          right: -301px;
+          text-align: right;
+          width: 160px;
+          margin: 0;
+          font-size: 14px;
+        }
+      }
+    }
+
+    #see-details-btn{
+      margin-top: 10px;
+      color: white;
+      position: relative;
+      left: 36px;
+      cursor: pointer;
+      font-size: 12px;
+      letter-spacing: 1px;
+  
+      &:hover{
+       text-decoration: underline;
+      }
+    }
+  }
+
+  #section-details{
+
+    .expenses-content{
+      display: flex;
+      margin-top: 17px;
+  
+      .col-expenses{
+        display: flex;
+        flex-direction: column;
+  
+        p{
+          margin: 0;
+          margin-bottom: 7px;
+          font-size: 15px;
+          color: $mainFontColor;
+          
+          cursor: pointer;
+        }
+  
+        .disabled{
+          text-decoration: line-through;
+        }
+      }
+  
+      #checkboxes{
+  
+        position: relative;
+        top: -2px;
+  
+        label{
+          margin-bottom: 5px;
+          margin-left: 0;
+        }
+      }
+  
+      .checkbox-labels{
+        margin-right: 15px;
+      }
+    }
+
+    #close-details-btn{
+      position: absolute;
+      top: 19px;
+      left: 13px;
+      cursor: pointer;
+  
+      i{
+        font-size: 1.5rem;
+      }
+    }
+  }
+
+  #section-total{
+
+    background-color: white;
+
+    #price-total{
+      margin-top: 50px;
+      font-size: 1.5rem;
+      letter-spacing: 1px;
+      font-weight: bold;
+    }
+  
+    #compra-out-of-range-text{
+      text-align: center;
+    }
+  }
+}

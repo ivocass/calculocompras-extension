@@ -1,0 +1,439 @@
+<!doctype html>
+
+<html lang="es">
+
+<head>
+	
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="description" content='Una calculadora para envíos "puerta a puerta" que incluye el costo de gestión de Correo Argentino, con una interfaz minimalista (www.calculocompras.com).'>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+	<title>CalculoCompras</title>
+
+	<link href="css/styles.css" rel="stylesheet" type="text/css">
+	
+    <script src="assets/jquery-3.2.1.slim.min.js"></script>
+    
+    <!-- CSP compliant version of Vue (regular Vue can't run on the chrome extensions environment) -->
+	<script src="assets/vue-csp.min.js"></script>
+	<!-- <script src="assets/vue.min.js"></script> -->
+
+	<!-- this is left outside the bundle so it can be easily updated -->
+    <script src="assets/config.js"></script>
+    
+    <!-- not downloading the analytics because of CSP -->
+    <script src='assets/analytics.js'></script>    
+    <script src="assets/tracker.js"></script>
+    
+    <script src="assets/tether/tether.min.js"></script>
+    <link href="assets/tether/tether.min.css" rel="stylesheet" type="text/css">
+    <link href="assets/tether/tether-theme-arrows.min.css" rel="stylesheet" type="text/css">
+    <link href="assets/tether/tether-theme-arrows-dark.min.css" rel="stylesheet" type="text/css">
+    <link href="assets/tether/tether-theme-basic.min.css" rel="stylesheet" type="text/css">
+
+	<script src="assets/bootstrap/bootstrap.min.js"></script>
+	<link href="assets/bootstrap/bootstrap.min.css" rel="stylesheet" type="text/css">
+	<link href="assets/bootstrap/bootstrap-grid.min.css" rel="stylesheet" type="text/css">
+	<link href="assets/bootstrap/bootstrap-reboot.min.css" rel="stylesheet" type="text/css">
+
+    <script src="assets/font-awesome.js"></script>
+
+</head>
+
+<!-- MIT License
+
+Copyright (c) 2017 Ivo Cass
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE. -->
+
+<body>
+
+    <div id="app">
+
+        <div id="app-links">
+    
+            
+
+            <div v-bind:class="{'d-none':!showingOptions}">
+                <button title="calculocompras.com" v-on:click="onHomeClicked()"><i class="fa fa-home" aria-hidden="true"></i></button>
+                <button title="facebook.com/CalculoCompras" v-on:click="onFacebookClicked()"><i class="fa fa-facebook-official" aria-hidden="true"></i></button>
+                <button title="Abrir la extensión en una nueva ventana" v-on:click="openAppInNewWindow()">
+                    <i class="fa fa-window-restore" aria-hidden="true"></i>
+                </button>
+                <button title="Configuración" v-on:click="openSettings()"><i class="fa fa-cog" aria-hidden="true"></i></button>
+            </div>
+
+            <button id="options-btn" title="Opciones" v-on:click="toggleOptions()"><i class="fa fa-ellipsis-v" aria-hidden="true"></i></button>
+            
+        </div>
+        
+
+        <div id="calculator">
+
+            <div id="section-purchase" class="panel" v-bind:class="{'d-none':alternateDetailsEnabled}">
+
+                <h5 class="panel-title">COMPRA</h5>                
+
+                <div id="compra-stuff" class="d-flex">
+
+                    <div class="arrow-container">
+                        <div class="arrow"><i class="fa fa-caret-down" aria-hidden="true"></i></div>
+                    </div>                    
+
+                    <select id="currency-select" class="form-control mr-2" v-on:change="onCurrencySelected($event)" aria-label="Seleccioná la moneda de tu compra (los valores pueden actualizarse y modificarse en 'Configuración')">
+                        <option aria-label="Dólar estadounidense">{{selectOptionUSD}}</option>
+                        <option aria-label="Euro">{{selectOptionEUR}}</option>
+                        <option aria-label="Libra esterlina">{{selectOptionGBP}}</option>
+                        <option aria-label="Peso argentino">{{selectOptionARS}}</option>						
+                    </select>
+                    
+                    <input class="form-control price-input" type="number" id="price-compra-input" aria-label="El monto de la compra">
+
+                    
+                </div>
+                
+                <button v-if="alternativeDesignEnabled" id="see-details-btn" class="btn-transparent" v-on:click="showDetailsSection()">
+                    Ver detalle
+                </button>
+
+                
+
+            </div>
+
+            <div id="section-details" class="panel" v-bind:class="{'d-none':!alternateDetailsEnabled}">
+
+                <h5 class="panel-title">DETALLE</h5>
+
+                <button v-if="alternateDetailsEnabled" id="close-details-btn" class="btn-transparent" title="Volver" v-on:click="hideDetailsSection()">
+                    <i class="fa fa-arrow-left text-white" aria-hidden="true"></i>
+                </button>
+
+                <div class="expenses-content">
+
+                    <div id="checkboxes" class="col-expenses" v-bind:class="{'d-none':!showCheckboxes}">
+    
+                        <div class="custom-checkbox" aria-label="Checkbox para la compra en pesos (deshabilitado por ser obligatorio)">
+                            <input type="checkbox" id="cbox1" name="cc" checked disabled/>
+                            <label for="cbox1">
+                                <span class="background disabled">
+                                    <i class="fa fa-check checkbox-check" aria-hidden="true"></i>
+                                </span>
+                            </label>
+                        </div>
+
+                        <div class="custom-checkbox" aria-label="Checkbox para el tributo de AFIP (deshabilitado por ser obligatorio)">
+                            <input type="checkbox" id="cbox2" name="cc" checked disabled/>
+                            <label for="cbox2">
+                                <span class="background disabled">
+                                    <i class="fa fa-check checkbox-check" aria-hidden="true"></i>
+                                </span>
+                            </label>
+                        </div>
+
+                        <div class="custom-checkbox" aria-label="Checkbox para la gestión de Correo Argentino (deshabilitado por ser obligatorio)">
+                            <input type="checkbox" id="cbox3" name="cc" checked disabled/>
+                            <label for="cbox3">
+                                <span class="background disabled">
+                                    <i class="fa fa-check checkbox-check" aria-hidden="true"></i>
+                                </span>
+                            </label>
+                        </div>
+
+                        <div class="custom-checkbox" aria-label="Seleccionar si querés que se aplique la franquicia anual sobre el tributo de AFIP">
+                            <input type="checkbox" id="cbox4" name="cc" :checked="showFranquicia" v-on:click="onLabelClicked('franquicia')"/>
+                            <label for="cbox4">
+                                <span class="background">
+                                    <i class="fa fa-check checkbox-check" aria-hidden="true"></i>
+                                </span>
+                            </label>
+                        </div>
+    
+                    </div>
+    
+                    <div class="checkbox-labels col-expenses">
+
+                        <p id="label-pesos" class="label">
+                            Compra										
+                        </p>
+
+                        <p id="label-afip" class="label no-select" title="Tributo de 50% sobre la compra">
+                            AFIP											
+                        </p>
+
+                        <p id="label-correo" title="Gestión de Correo Argentino" class="label no-select">
+                            Correo										
+                        </p>
+                        
+                        <p id="label-franquicia" title="AFIP, U$S-25 (anual)" class="label cursor-pointer no-select" v-bind:class="{disabled:!showFranquicia || !showAfip}" v-on:click="onLabelClicked('franquicia')">
+                            Franquicia										
+                        </p>
+    
+                    </div>
+    
+                    <div id="expenses" class="col-expenses">
+    
+                        <p class="label" id="price-pesos" aria-label="El monto de la compra expresada en pesos">{{valCurrencyConversionText}}</p>
+                        <p class="label" id="price-afip" title="50%" aria-label="El monto del tributo de AFIP">${{valAfip}}</p>
+                        <p class="label" id="price-correo" aria-label="El monto de gestión de Correo Argentino">${{valCorreo}}</p>
+                        <p class="label" id="price-franquicia" v-bind:class="{invisible:!showFranquicia || !showAfip}" aria-label="El monto de la franquicia anual">${{valFranquicia}}</p>
+                            
+                    </div>
+
+                </div>
+
+
+            </div>
+
+            <div id="section-total" class="panel">
+
+                <h5 class="panel-title">TOTAL</h5>
+
+                <h1 id='price-total' class="title" v-bind:class="{'half-opacity':isCompraOutOfRange}" aria-label="Valor total (estimado)">
+                    <span v-if="valCompra != 0" class="title" >$</span>
+                    {{valTotal}}
+                </h1>
+
+                <p v-if="isCompraOutOfRange" id="compra-out-of-range-text" aria-label="Este texto solo se muestra cuando la compra supere el límite de AFIP para compras 'Puerta a Puerta'">								
+                    Ojo, superaste<br> los U$S{{valCompraMax}}
+                </p>
+
+            </div>
+
+        </div>
+
+        <div id="settings" class="d-none">
+
+            <div class="settings-body">
+        
+                <button type="button" class="btn-icon close" aria-label="Close" v-on:click="closeSettings()">
+                    <i class="fa fa-times" aria-hidden="true"></i>
+                </button>
+                    
+                <div class="content">
+                    
+                    <div class="settings-row">
+
+                        <p>Color</p>
+        
+                        <div class="ml-auto">
+
+                            <button class="btn color-picker-btn emerald" title="Emerald" v-on:click="setMainColor('#10c77b')">
+                                <i v-if="mainColor == '#10c77b'" class="fa fa-check text-white" aria-hidden="true"></i>
+                            </button>
+
+                            <button class="btn color-picker-btn carbon" title="Carbon" v-on:click="setMainColor('#292b2c')">
+                                <i v-if="mainColor == '#292b2c'" class="fa fa-check text-white" aria-hidden="true"></i>
+                            </button>
+
+                            <button class="btn color-picker-btn rose" title="Chestnut Rose" v-on:click="setMainColor('#D24D57')">
+                                <i v-if="mainColor == '#D24D57'" class="fa fa-check text-white" aria-hidden="true"></i>
+                            </button>
+
+                            <button class="btn color-picker-btn blue" title="Material Blue" v-on:click="setMainColor('#3367d6')">
+                                <i v-if="mainColor == '#3367d6'" class="fa fa-check text-white" aria-hidden="true"></i>
+                            </button>
+
+                        </div>
+                        
+                    </div>
+
+                    <div class="settings-row">
+        
+                        <p aria-label="Sirve para esconder de la app todos los checkboxes de la sección 'Gastos' (ya que también se puede cliquear sobre los textos)">Mostrar checkboxes</p>
+        
+                        <div class="ml-auto">
+                            <div class="slider-toggle">
+                                <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="sliderToggleCheckboxes" 
+                                v-on:click="toggleCheckboxes()">
+                                <label class="onoffswitch-label" for="sliderToggleCheckboxes"></label>
+                            </div>
+        
+                        </div>
+                        
+                    </div>
+                            
+        
+                    <!-- this should be a 'for', like in the web app, but Vue CSP has no reactivity with objecs's properties, 
+                        so stuff like currency.getHasCustomVal() would only work the first time, when the element is rendered. 
+                        maybe use a Vue component for this in the future-->
+                    
+
+                    <div class="settings-row settings-row-currencies" aria-label="Sección para actualizar y modificar el euro">
+        
+                        <div class="d-flex align-items-center w-100">
+                            <p>Dólar</p>
+        
+                            <span class="mx-1">$</span>
+        
+                            <input class="form-control settings-input automatic" v-bind:class="{'d-none':isCurrencyUSDCustom}" 
+                                type="number" :value="currencyUSDVal" title="Valor automático" disabled aria-label="El valor actual (no se puede editar ya que es proveído automáticamente)"> 
+                                
+                            <input class="form-control settings-input" v-bind:class="{'d-none':!isCurrencyUSDCustom}" 
+                                type="number" :value="currencyUSDVal" title="Valor modificado"  
+                                v-on:change="onCurrencyModified($event, 'USD')" aria-label="Este valor sí puede ser modificado"> 
+        
+                            <span class="ml-2" v-bind:class="{'d-none':isCurrencyUSDCustom}">
+                                (automático -
+                                <a :href="'https://finance.yahoo.com/quote/' + 'USD' + 'ars=x?ltr=1'" target="_blank" title="Yahoo Fianance">fuente</a>
+                                )
+                            </span>
+        
+                            <span class="ml-2" v-bind:class="{'d-none':!isCurrencyUSDCustom}">(modificado)</span>
+        
+                            <div class="ml-auto" aria-label="Con este switch se puede cambiar de valor automático a modificado para la moneda (chequeado es 'automático')">
+                                <div class="slider-toggle">
+                                    <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="sliderToggleUSD" :checked="!isCurrencyUSDCustom"
+                                    v-on:click="toggleCustomCurrency('USD')">
+                                    <label class="onoffswitch-label" for="sliderToggleUSD"></label>
+                                </div>
+        
+                            </div>
+        
+                        </div>
+        
+                        <p class="last-update">Última actualización: 
+        
+                            <span v-if="isCurrencyUSDCustom">N/D</span>
+        
+                            <span v-if="!isCurrencyUSDCustom && currencyUSDLastUpdateDate != -1" class="ml-1">
+                                {{currencyUSDLastUpdateDateReadable}}
+                            </span>
+        
+                            <button v-if="!isCurrencyUSDCustom" class="btn btn-icon ml-1" title="Actualizar" v-on:click="updateCurrency('USD')"
+                                     aria-label="Click para actualizar el valor de la moneda con Yahoo Finance">
+                                <i class="fa fa-refresh currency-refresh" aria-hidden="true"></i>
+                            </button>								
+                        </p>
+                        
+                    </div>
+
+                    <div class="settings-row settings-row-currencies" aria-label="Sección para actualizar y modificar el euro">
+        
+                        <div class="d-flex align-items-center w-100">
+                            <p>Euro</p>
+        
+                            <span class="mx-1">$</span>
+        
+                            <input class="form-control settings-input automatic" v-bind:class="{'d-none':isCurrencyEURCustom}" 
+                                type="number" :value="currencyEURVal" title="Valor automático" disabled aria-label="El valor actual (no se puede editar ya que es proveído automáticamente)"> 
+                                
+                            <input class="form-control settings-input" v-bind:class="{'d-none':!isCurrencyEURCustom}" 
+                                type="number" :value="currencyEURVal" title="Valor modificado"  
+                                v-on:change="onCurrencyModified($event, 'EUR')" aria-label="Este valor sí puede ser modificado"> 
+        
+                            <span class="ml-2" v-bind:class="{'d-none':isCurrencyEURCustom}">
+                                (automático -
+                                <a :href="'https://finance.yahoo.com/quote/' + 'EUR' + 'ars=x?ltr=1'" target="_blank" title="Yahoo Fianance">fuente</a>
+                                )
+                            </span>
+        
+                            <span class="ml-2" v-bind:class="{'d-none':!isCurrencyEURCustom}">(modificado)</span>
+        
+                            <div class="ml-auto" aria-label="Con este switch se puede cambiar de valor automático a modificado para la moneda (chequeado es 'automático')">
+                                <div class="slider-toggle">
+                                    <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="sliderToggleEUR" :checked="!isCurrencyEURCustom"
+                                    v-on:click="toggleCustomCurrency('EUR')">
+                                    <label class="onoffswitch-label" for="sliderToggleEUR"></label>
+                                </div>
+        
+                            </div>
+        
+                        </div>
+        
+                        <p class="last-update">Última actualización: 
+        
+                            <span v-if="isCurrencyEURCustom">N/D</span>
+        
+                            <span v-if="!isCurrencyEURCustom && currencyEURLastUpdateDate != -1" class="ml-1">
+                                {{currencyEURLastUpdateDateReadable}}
+                            </span>
+        
+                            <button v-if="!isCurrencyEURCustom" class="btn btn-icon ml-1" title="Actualizar" v-on:click="updateCurrency('EUR')"
+                                     aria-label="Click para actualizar el valor de la moneda con Yahoo Finance">
+                                <i class="fa fa-refresh currency-refresh" aria-hidden="true"></i>
+                            </button>								
+                        </p>
+                        
+                    </div>
+
+                    <div class="settings-row settings-row-currencies" aria-label="Sección para actualizar y modificar la libra esterlina">
+        
+                        <div class="d-flex align-items-center w-100">
+                            <p>Libra</p>
+        
+                            <span class="mx-1">$</span>
+        
+                            <input class="form-control settings-input automatic" v-bind:class="{'d-none':isCurrencyGBPCustom}" 
+                                type="number" :value="currencyGBPVal" title="Valor automático" disabled aria-label="El valor actual (no se puede editar ya que es proveído automáticamente)"> 
+                                
+                            <input class="form-control settings-input" v-bind:class="{'d-none':!isCurrencyGBPCustom}" 
+                                type="number" :value="currencyGBPVal" title="Valor modificado"  
+                                v-on:change="onCurrencyModified($event, 'GBP')" aria-label="Este valor sí puede ser modificado"> 
+        
+                            <span class="ml-2" v-bind:class="{'d-none':isCurrencyGBPCustom}">
+                                (automático -
+                                <a :href="'https://finance.yahoo.com/quote/' + 'GBP' + 'ars=x?ltr=1'" target="_blank" title="Yahoo Fianance">fuente</a>
+                                )
+                            </span>
+        
+                            <span class="ml-2" v-bind:class="{'d-none':!isCurrencyGBPCustom}">(modificado)</span>
+        
+                            <div class="ml-auto" aria-label="Con este switch se puede cambiar de valor automático a modificado para la moneda (chequeado es 'automático')">
+                                <div class="slider-toggle">
+                                    <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="sliderToggleGBP" :checked="!isCurrencyGBPCustom"
+                                    v-on:click="toggleCustomCurrency('GBP')">
+                                    <label class="onoffswitch-label" for="sliderToggleGBP"></label>
+                                </div>
+        
+                            </div>
+        
+                        </div>
+        
+                        <p class="last-update">Última actualización: 
+        
+                            <span v-if="isCurrencyGBPCustom">N/D</span>
+        
+                            <span v-if="!isCurrencyGBPCustom && currencyGBPLastUpdateDate != -1" class="ml-1">
+                                {{currencyGBPLastUpdateDateReadable}}
+                            </span>
+        
+                            <button v-if="!isCurrencyGBPCustom" class="btn btn-icon ml-1" title="Actualizar" v-on:click="updateCurrency('GBP')"
+                                     aria-label="Click para actualizar el valor de la moneda con Yahoo Finance">
+                                <i class="fa fa-refresh currency-refresh" aria-hidden="true"></i>
+                            </button>								
+                        </p>
+                        
+                    </div>
+                    
+                        
+                </div>
+
+        </div>
+
+    </div>
+  
+
+
+	<script src="js/bundle.js"></script>
+
+</body>
+
+</html>
