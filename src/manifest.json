@@ -3,7 +3,7 @@
 
   "name": "CalculoCompras",
   "description": "Calculadora para compras 'puerta a puerta' (www.calculocompras.com)",
-  "version": "0.0.0.1",
+  "version": "0.0.0.2",
 
   "browser_action": {
     "default_icon": "images/extension-icon16.png",
@@ -16,6 +16,5 @@
   "permissions": [
     "storage",
     "https://*.google.com/"
-  ],
-  "content_security_policy": "script-src 'self' https://use.fontawesome.com https://www.google-analytics.com https://ampcid.google.com https://www.google.com; object-src 'self'"
+  ]
 }
