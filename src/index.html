@@ -157,8 +157,8 @@ SOFTWARE. -->
                             </label>
                         </div>
 
-                        <div class="custom-checkbox" aria-label="Seleccionar si querés que se aplique la franquicia anual sobre el tributo de AFIP">
-                            <input type="checkbox" id="cbox4" name="cc" :checked="showFranquicia" v-on:click="onLabelClicked('franquicia')"/>
+                        <div class="custom-checkbox" aria-label="Seleccionar si querés que se aplique la franquicia anual.">
+                            <input type="checkbox" id="cbox4" name="cc" :checked="useFranchise" v-on:click="onLabelClicked('franquicia')"/>
                             <label for="cbox4">
                                 <span class="background">
                                     <i class="fa fa-check checkbox-check" aria-hidden="true"></i>
@@ -174,7 +174,7 @@ SOFTWARE. -->
                             Compra										
                         </p>
 
-                        <p id="label-afip" class="label no-select" title="Tributo de 50% sobre la compra">
+                        <p id="label-afip" class="label no-select" title="Tributo de 50% del excedente de la franquicia.">
                             AFIP											
                         </p>
 
@@ -182,7 +182,7 @@ SOFTWARE. -->
                             Correo										
                         </p>
                         
-                        <p id="label-franquicia" title="AFIP, U$S-25 (anual)" class="label cursor-pointer no-select" v-bind:class="{disabled:!showFranquicia || !showAfip}" v-on:click="onLabelClicked('franquicia')">
+                        <p id="label-franquicia" title="Franquicia anual" class="label cursor-pointer no-select" v-bind:class="{disabled:!useFranchise || !showAfip}" v-on:click="onLabelClicked('franquicia')">
                             Franquicia										
                         </p>
     
@@ -193,7 +193,7 @@ SOFTWARE. -->
                         <p class="label" id="price-pesos" aria-label="El monto de la compra expresada en pesos">{{valCurrencyConversionText}}</p>
                         <p class="label" id="price-afip" title="50%" aria-label="El monto del tributo de AFIP">${{valAfip}}</p>
                         <p class="label" id="price-correo" aria-label="El monto de gestión de Correo Argentino">${{valCorreo}}</p>
-                        <p class="label" id="price-franquicia" v-bind:class="{invisible:!showFranquicia || !showAfip}" aria-label="El monto de la franquicia anual">${{valFranquicia}}</p>
+                        <!-- <p class="label" id="price-franquicia" v-bind:class="{invisible:!useFranchise || !showAfip}" aria-label="El monto de la franquicia anual">${{valFranchiseDiscount}}</p> -->
                             
                     </div>
 

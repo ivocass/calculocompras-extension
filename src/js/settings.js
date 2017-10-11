@@ -36,7 +36,7 @@ export default function Settings(){
         
         var showInfoIcons = utils.getSavedItem('showInfoIcons');
         var showCheckboxes = utils.getSavedItem('showCheckboxes');
-        var showFranquicia = utils.getSavedItem('showFranquicia');
+        var useFranchise = utils.getSavedItem('useFranchise');
         
         
 
@@ -62,8 +62,8 @@ export default function Settings(){
         $('#sliderToggleCheckboxes').prop('checked', app.data.showCheckboxes);
         
 
-        if(showFranquicia !== null && (showFranquicia === true || showFranquicia === false)){
-            app.data.showFranquicia = showFranquicia;
+        if(useFranchise !== null && (useFranchise === true || useFranchise === false)){
+            app.data.useFranchise = useFranchise;
         }
 
         app.saveSettingRequested.add(onSaveSettingRequested);
