@@ -26,14 +26,6 @@ var CurrencyManager = function(){
 
         if(selectedCurrencyId == null || selectedCurrencyId == undefined || selectedCurrencyId == ''){
             selectedCurrencyId = app.config.defaultCurrencyId;
-
-            ga('send', {
-                hitType: 'event',
-                eventCategory: 'Settings',
-                eventAction: 'loaded',
-                eventLabel: 'selectedCurrencyId',
-                eventValue: selectedCurrencyId
-            });
         }
 
         app.data.currency = getCurrencyById(selectedCurrencyId);

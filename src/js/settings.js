@@ -159,14 +159,6 @@ export default function Settings(){
         if(mainColor !== null){
             
             self.setMainColor(mainColor);
-
-            ga('send', {
-                hitType: 'event',
-                eventCategory: 'Settings',
-                eventAction: 'loaded',
-                eventLabel: 'mainColor',
-                eventValue: mainColor
-            });              
         }
         else{
             self.setMainColor(app.config.mainColor);

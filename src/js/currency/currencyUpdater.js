@@ -64,7 +64,7 @@ var CurrencyUpdater = function(id, queryUrl, onUpdateSuccessful, onUpdateError){
         log('CurrencyUpdater() - sendRequest() - queryUrl:', queryUrl);
 
         req.open('GET', queryUrl, true);
-        req.send();
+        // req.send(); don't send. Yahoo Finance is dead
     }
 
     req.onreadystatechange = function(){

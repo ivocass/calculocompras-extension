@@ -162,32 +162,15 @@ var App = function(){
         // window.data = app.data;
 
         this.onHomeClicked = function(){
-            ga('send', {
-                hitType: 'event',
-                eventCategory: 'Home',
-                eventAction: 'Clicked'
-            });
-    
-            window.open('http://www.calculocompras.com','_blank');
+           window.open('http://www.calculocompras.com','_blank');
         };
 
         this.onFacebookClicked = function(){
-            ga('send', {
-                hitType: 'event',
-                eventCategory: 'Facebook',
-                eventAction: 'Clicked'
-            });
-    
             window.open('https://www.facebook.com/CalculoCompras','_blank');
         };
 
         this.openAppInNewWindow = function(){
-            ga('send', {
-                hitType: 'event',
-                eventCategory: 'Popup',
-                eventAction: 'Clicked'
-            });
-
+           
             if(utils.getIsBrowser('Chrome')){
 
                 chrome.windows.create({type:'popup', url:'index.html', focused:true, width:467, height:264});
